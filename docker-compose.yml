@@ -1,0 +1,21 @@
+
+version: "3"
+
+services:
+  minicloud:
+    build: ./minicloud/
+    restart: always
+    ports:
+      - "3000:3000"
+    command:
+      "npm run dev"
+    container_name: minicloud_web
+
+  nginx:
+    image: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    depends_on:
+      - minicloud
