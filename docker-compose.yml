@@ -1,21 +1,66 @@
-
-version: "3"
+version: '3.7'
 
 services:
-  minicloud:
-    build: ./minicloud/
-    restart: always
+  mariadb:
+    image: mariadb
+    ports:
+      - 3306:3306
+    volumes:
+      - db-data:/var/lib/mysql
+    environment:
+      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: 123
+      MYSQLDB_DATABASE: minicloud
+      MYSQL_PASSWORD: 123
+      MYSQL_PORT: 3306
+
+  minicloud-backend:
+    build:
+      context: minicloud_backend
+      dockerfile: Dockerfile
+      target: base
+    volumes:
+      - ./minicloud_backend/src:/home/node/app/src
+      - ./minicloud_backend/nodemon.json:/home/node/app/nodemon.json
+    container_name: minicloud_backend
+    ports:
+      - 8080:8080
+    depends_on:
+      - mariadb
+    command: npm run dev
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      BASE_URL: http://localhost/apis
+
+  minicloud-web:
+    build: minicloud_web
+    volumes:
+      - ./minicloud_web/components:/app/components
+      - ./minicloud_web/images:/app/images
+      - ./minicloud_web/lang:/app/lang
+      - ./minicloud_web/pages:/app/pages
+      - ./minicloud_web/static:/app/static
+      - ./minicloud_web/nuxt.config.js:/app/nuxt.config.js
     ports:
       - "3000:3000"
     command:
       "npm run dev"
     container_name: minicloud_web
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
 
-  nginx:
+  reverse-proxy:
     image: nginx
     ports:
       - "80:80"
     volumes:
-      - ./nginx:/etc/nginx/conf.d
+      - ./minicloud_backend/public:/usr/share/nginx/backend:ro
+      - ./minicloud_web/assets:/usr/share/nginx/frontend:ro
+      - ./nginx/local.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/logs:/etc/nginx/logs:rw
     depends_on:
-      - minicloud
+      - minicloud-web
+    container_name: reverse-proxy
+
+volumes:
+  db-data: {}
