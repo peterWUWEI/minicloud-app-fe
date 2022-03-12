@@ -49,18 +49,5 @@ services:
     environment:
       NODE_ENV: ${NODE_ENV:-production}
 
-  reverse-proxy:
-    image: nginx
-    ports:
-      - "80:80"
-    volumes:
-      - ./minicloud_backend/public:/usr/share/nginx/backend:ro
-      - ./minicloud_web/assets:/usr/share/nginx/frontend:ro
-      - ./nginx/local.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/logs:/etc/nginx/logs:rw
-    depends_on:
-      - minicloud-web
-    container_name: reverse-proxy
-
 volumes:
   db-data: {}
