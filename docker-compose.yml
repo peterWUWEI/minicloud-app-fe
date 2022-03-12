@@ -30,7 +30,7 @@ services:
     command: npm run dev
     environment:
       NODE_ENV: ${NODE_ENV:-production}
-      BASE_URL: http://localhost/apis
+      BASE_URL: https//localhost/apis
 
   minicloud-web:
     build: minicloud_web
@@ -42,24 +42,11 @@ services:
       - ./minicloud_web/nuxt.config.js:/app/nuxt.config.js
     ports:
       - "3000:3000"
-    command:
-      "npm run dev"
+    command: npm run start
     container_name: minicloud_web
     environment:
       NODE_ENV: ${NODE_ENV:-production}
-  
-  reverse-proxy:
-    image: nginx
-    ports:
-      - "80:80"
-    volumes:
-      - ./minicloud_backend/public:/usr/share/nginx/backend:ro
-      - ./minicloud_web/assets:/usr/share/nginx/frontend:ro
-      - ./nginx/local.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/logs:/etc/nginx/logs:rw
-    depends_on:
-      - minicloud-web
-    container_name: reverse-proxy
+      BASE_URL: https://localhost
 
 volumes:
   db-data: {}
