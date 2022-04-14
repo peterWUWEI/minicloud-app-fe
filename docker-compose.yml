@@ -35,10 +35,14 @@ services:
   minicloud-web:
     build: minicloud_web
     volumes:
+      - ./minicloud_web/components:/app/assets
       - ./minicloud_web/components:/app/components
       - ./minicloud_web/lang:/app/lang
+      - ./minicloud_web/lang:/app/layouts
       - ./minicloud_web/pages:/app/pages
+      - ./minicloud_web/pages:/app/plugins
       - ./minicloud_web/static:/app/static
+      - ./minicloud_web/static:/app/store
       - ./minicloud_web/nuxt.config.js:/app/nuxt.config.js
     ports:
       - "3000:3000"
