@@ -22,6 +22,8 @@ services:
     volumes:
       - ./minicloud_backend/src:/home/node/app/src
       - ./minicloud_backend/nodemon.json:/home/node/app/nodemon.json
+      - ./minicloud_backend/prisma:/home/node/app/prisma
+      - ./minicloud_backend/ormconfig.json:/home/node/app/ormconfig.json
     container_name: minicloud_backend
     ports:
       - 8080:8080
